@@ -52,4 +52,4 @@ Your application must satisfy the following User Stories:
 - As a user, I should be able to sort tasks by whether they are completed or not.
 
 # Submitting Your Project
-Once you have implemented the above user stories, please send a link to your own repository to sdonne5@students.towson.edu. Your repository must include the source code for the client and API, as well as your Dev Log. Be sure to include instructions on how to start up the application.
+Once you have implemented the above user stories, please send a link to your own repository to pzalep1@students.towson.edu. Your repository must include the source code for the client and API, as well as your Dev Log. Be sure to include instructions on how to start up the application.
