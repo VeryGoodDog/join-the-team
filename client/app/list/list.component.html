@@ -1,0 +1,9 @@
+<ul>
+	<li>{{tasks}}</li>
+</ul>
+<ul *ngFor="let id of ts">
+	<il>
+		Task: {{id}}
+		<app-task [id]="id"></app-task>
+	</il>
+</ul>

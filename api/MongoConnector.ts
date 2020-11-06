@@ -1,8 +1,9 @@
+import { Task, Category } from "./Tasks";
 import { MongoClient, Collection, ObjectID } from "mongodb";
 
 export class MongoDriver {
-  tasks: Collection;
-  categories: Collection;
+  tasks: Collection<Task>;
+  categories: Collection<Category>;
 
   constructor(private client: MongoClient) {
     this.tasks = client.db('task-service').collection('tasks');
@@ -21,35 +22,35 @@ export class MongoDriver {
   /**
    * Inserts a given task into the database
    *
-   * @param {*} task to be inserted into the database
+   * @param {Task} task to be inserted into the database
    * @returns
    * @memberof MongoDriver
    */
-  async createTask(task) {
+  async createTask(task: Task) {
     const res = await this.tasks.insertOne(task);
-    return res.insertedId.toHexString().toString();
+    return res.insertedId;
   }
 
   /**
    * Retrieves a task from the database
    *
-   * @param {string} id of the task to retrieve
+   * @param {ObjectID} id of the task to retrieve
    * @returns
    * @memberof MongoDriver
    */
-  async readTask(id: string) {
-    const task = await this.tasks.findOne({ _id: new ObjectID(id) });
+  async readTask(id: ObjectID) {
+    const task = await this.tasks.findOne({ _id: id });
     return task;
   }
 
   /**
    * Modifies a task in the database by overwriting it with the given task
    *
-   * @param {*} task the task to modify, must contain an id representing a task that currently exists in the database
+   * @param {Task} task the task to modify, must contain an id representing a task that currently exists in the database
    * @memberof MongoDriver
    */
-  async updateTask(task) {
-    await this.tasks.updateOne({ _id: new ObjectID(task._id) }, { $set: { ...task }});
+  async updateTask(task: Task) {
+    await this.tasks.updateOne({ _id: task._id }, { $set: { ...task }});
   }
 
   /**
@@ -66,11 +67,11 @@ export class MongoDriver {
   /**
    * Deletes a task
    *
-   * @param {*} id of the task to delete
+   * @param {ObjectID} id of the task to delete
    * @memberof MongoDriver
    */
-  async deleteTask(id) {
-    await this.tasks.deleteOne({ _id: new ObjectID(id) });
+  async deleteTask(id: ObjectID) {
+    await this.tasks.deleteOne({ _id: id });
   }
 
   /**
@@ -81,8 +82,8 @@ export class MongoDriver {
    * @memberof MongoDriver
    */
   async createCategory(name: string) {
-    const response = await this.categories.insertOne({ name });
-    return response.insertedId.toHexString().toString();
+    const response = await this.categories.insertOne({ name, tasks: [] });
+    return response.insertedId;
   }
 
   /**
@@ -99,23 +100,23 @@ export class MongoDriver {
   /**
    * Retrieves a category from the database
    *
-   * @param {string} id of the category to retrieve
+   * @param {ObjectID} id of the category to retrieve
    * @returns
    * @memberof MongoDriver
    */
-  async readCategory(id: string) {
-    return await this.categories.findOne({ _id: new ObjectID(id) });
+  async readCategory(id: ObjectID) {
+    return await this.categories.findOne({ _id: id});
   }
 
   /**
    * Modifies a category's name in the database
    *
-   * @param {string} categoryId the id of the category in the database
+   * @param {ObjectID} categoryId the id of the category in the database
    * @param {string} name the new name of the category
    * @memberof MongoDriver
    */
-  async updateCategory(categoryId: string, name: string) {
-    await this.categories.updateOne({ _id: new ObjectID(categoryId)}, {
+  async updateCategory(categoryId: ObjectID, name: string) {
+    await this.categories.updateOne({ _id: categoryId}, {
       $set: { name }      
     });
   }
@@ -123,32 +124,32 @@ export class MongoDriver {
   /**
    * Adds a list of existing tasks to an existing category
    *
-   * @param {string} categoryId the id of the category in which to add the task
-   * @param {string[]} taskList a list of task ids to add to the category
+   * @param {ObjectID} categoryId the id of the category in which to add the task
+   * @param {ObjectID[]} taskList a list of task ids to add to the category
    * @memberof MongoDriver
    */
-  async addTasksToCategory(categoryId: string, taskList: string[]) {
-    await this.categories.updateOne({ _id: new ObjectID(categoryId) }, { $push: { tasks: { $each: taskList.map(taskId => new ObjectID(taskId)) } } });
+  async addTasksToCategory(categoryId: ObjectID, taskList: ObjectID[]) {
+    await this.categories.updateOne({ _id: categoryId }, { $push: { tasks: { $each: taskList }  } });
   }
 
   /**
    * Removes a list of existing tasks from an existing category
    *
-   * @param {string} categoryId the id of the category from which to remove the tasks
-   * @param {string[]} taskList a list of task ids to add to the category
+   * @param {ObjectID} categoryId the id of the category from which to remove the tasks
+   * @param {ObjectID[]} taskList a list of task ids to add to the category
    * @memberof MongoDriver
    */
-  async removeTasksFromCategory(categoryId: string, taskList: string[]) {
-    await this.categories.updateOne({ _id: new ObjectID(categoryId) }, { $pull: { tasks: { $each: taskList.map(taskId => new ObjectID(taskId)) } } });
+  async removeTasksFromCategory(categoryId: ObjectID, taskList: ObjectID[]) {
+    await this.categories.updateOne({ _id: categoryId }, { $pull: { $each: { tasks: taskList }  }  });
   }
 
   /**
    * Deletes a category from the database
    *
-   * @param {string} id of the category to delete
+   * @param {ObjectID} id of the category to delete
    * @memberof MongoDriver
    */
-  async deleteCategory(id: string) {
-    await this.categories.deleteOne({ _id: new ObjectID(id) });
+  async deleteCategory(id: ObjectID) {
+    await this.categories.deleteOne({ _id: id });
   }
 }

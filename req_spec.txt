@@ -1,0 +1,58 @@
+Tasks:
+/tasks?act=<action>[&id=<id>]
+
+List all Tasks by ID:
+GET /tasks?act=list
+Response contains a JSON array of all Task IDs.
+
+Request Task body by ID:
+GET /tasks?act=get&id=<id>
+Response contains a JSON object of the Task.
+
+Create a Task:
+POST /tasks?act=add
+Request contains a JSON object of the Task.
+Response contains the new Task's ID.
+
+Edit a Task:
+PATCH /tasks?act=edit
+Request contains a partial Task with an ID and some changes.
+
+Complete a Task:
+PATCH /tasks?act=com&id=<id>
+The server marks the Task as complete.
+
+Uncomplete a Task:
+PATCH /tasks?act=uncom&id=<id>
+The server marks the Task as not complete.
+
+Delete a Task:
+DELETE /tasks?act=del&id=<id>
+The server deletes the Task.
+
+CATEGORIES:
+/cats?act=<action>[&id=<id>]
+
+List all categories:
+GET /cats?act=list
+Response contains a JSON array of all Category BODIES.
+
+Create a Category:
+POST /cats?act=add
+Request contains an object with `name: string` for the new Category.
+
+Rename a Category:
+PATCH /cats?act=rename&id=<id>
+Request contains an object with `name: string` for the Category.
+
+Add Task to Category:
+POST /cats?act=addtasks&id=<id>
+Request contains an array of Task IDs to be added.
+
+Remove Task from Category:
+POST /cats?act=remtask&id=<id>
+Request contains an array of Task IDs to be removed.
+
+Delete a Category:
+DELETE /cats?act=del&id=<id>
+The server deletes the Category.

@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { MongoDriver } from './MongoConnector';
 
 // Set the connection url based on the defaults provided
-const url = 'mongodb://root:example@localhost:27017';
+const url = process.env.MONGO_URL ?? 'mongodb://root:example@localhost:27017';
 
 export class MongoDriverFactory {
 
